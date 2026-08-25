@@ -1,88 +1,133 @@
 /* ==========================================================================
-   BAJO LOS TRES PALOS MX · hero cinemático
-   El scroll no "hace scroll": mueve el cabezal del video. La sección mide
-   varias pantallas, el pin se queda fijo y currentTime se interpola hacia el
-   punto que marca el scroll, así el scrub queda suave y no a tirones.
-   Degradado seguro: sin JS, sin video o con reduced-motion queda un hero
-   normal de una pantalla con el póster.
+   BAJO LOS TRES PALOS MX · hero con scroll-driven video scrubbing
+   --------------------------------------------------------------------------
+   La sección mide varias pantallas y el pin (position:sticky) se queda fijo
+   mientras dura el recorrido. El video no se reproduce solo: su currentTime
+   está atado a la posición del scroll, así que avanza cuadro a cuadro cuando
+   bajas y retrocede cuando subes.
+
+   Son dos clips encadenados: el primero ocupa la mitad del recorrido y el
+   segundo aparece encima (revelado monótono, nunca se asoma el póster entre
+   los dos). Cada clip interpola su currentTime en un bucle de rAF para que el
+   barrido salga suave y no a tirones.
+
+   Sticky nativo + rAF. Sin librerías.
    ========================================================================== */
 (function () {
   var sec = document.getElementById('inicio');
   if (!sec) return;
-  var video = sec.querySelector('.cine-clip');
-  var copy = sec.querySelector('.cine-copy');
-  var prog = sec.querySelector('.cine-prog');
-  var cue = sec.querySelector('.cine-cue');
-  var hud = sec.querySelector('.cine-hud-idx');
-  if (!video) return;
 
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var clips = [].slice.call(sec.querySelectorAll('.cine-clip'));
+  var copy  = sec.querySelector('.cine-copy');
+  var prog  = sec.querySelector('.cine-prog');
+  var cue   = sec.querySelector('.cine-cue');
+  var hud   = sec.querySelector('.cine-hud-idx');
+  if (!clips.length) return;
 
-  /* Fuente según ancho y ahorro de datos: 540p en móvil, 720p en escritorio. */
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+  /* ---- Fuente según ancho y ahorro de datos ----------------------------- */
   var conn = navigator.connection || {};
   var ligero = window.innerWidth < 768 || conn.saveData === true ||
-               /2g/.test(conn.effectiveType || '');
-  video.src = ligero ? video.dataset.srcSm : video.dataset.srcLg;
+               /(^|\D)2g/.test(conn.effectiveType || '');
+  clips.forEach(function (v) {
+    v.src = ligero ? v.dataset.srcSm : v.dataset.srcLg;
+  });
 
-  if (reduce) { video.removeAttribute('src'); return; }   // se queda el póster
+  /* ---- Ventanas de cada clip sobre el progreso de la sección ------------
+     El clip 0 barre de 0 a 0.47 y el 1 de 0.53 a 1. Entre 0.44 y 0.56 el
+     segundo se revela encima del primero, que se queda debajo a opacidad 1. */
+  var SCRUB   = [[0.00, 0.47], [0.53, 1.00]];
+  var REVELAR = [[0.00, 0.00], [0.44, 0.56]];
 
-  var clamp = function (v, a, b) { return v < a ? a : (v > b ? b : v); };
-  var smooth = function (t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  var dur   = clips.map(function () { return 0; });
+  var listo = clips.map(function () { return false; });
+  var meta  = clips.map(function () { return false; });
+  var obj   = clips.map(function () { return 0; });   // segundo objetivo
+  var act   = clips.map(function () { return 0; });   // segundo interpolado
+  var vis   = clips.map(function () { return 0; });   // opacidad actual
 
-  var dur = 0;
-  var listo = false;
-  var objetivo = 0;      // segundo al que apunta el scroll
-  var actual = 0;        // segundo mostrado (interpolado)
-  var p = 0;             // progreso 0..1 de la sección
-  var enVista = true;    // el pin está en pantalla
+  clips.forEach(function (v, i) {
+    function medirDur() {
+      if (v.duration && isFinite(v.duration)) { dur[i] = v.duration; meta[i] = true; }
+    }
+    v.addEventListener('loadedmetadata', medirDur);
+    v.addEventListener('loadeddata', medirDur);
+    v.addEventListener('canplay', function () { medirDur(); if (v.readyState >= 3) marcar(i); });
+    v.addEventListener('canplaythrough', function () { medirDur(); marcar(i); });
+  });
 
-  function marcarListo() {
-    if (listo) return;
-    dur = video.duration || 0;
-    if (!dur || !isFinite(dur)) return;
-    listo = true;
-    sec.classList.add('is-playing');
+  function marcar(i) {
+    if (listo[i]) return;
+    listo[i] = true;
+    if (i === 0) { sec.classList.add('is-playing'); cargarSiguiente(1); }
     medir();
   }
-  video.addEventListener('loadedmetadata', function () { dur = video.duration || 0; });
-  video.addEventListener('canplaythrough', marcarListo);
-  video.addEventListener('canplay', marcarListo);
-  video.addEventListener('error', function () { sec.classList.remove('is-ready'); });
-  try { video.load(); } catch (e) {}
 
-  /* Con JS activo la sección crece y el pin toma el control. */
+  /* El clip 1 se descarga en segundo plano mientras el usuario ve el 0, así la
+     espera no se nota. Un tiempo de gracia evita que la cadena se atore. */
+  function cargarSiguiente(i) {
+    if (i >= clips.length) return;
+    clips[i].preload = 'auto';
+    try { clips[i].load(); } catch (e) {}
+  }
+  clips[0].preload = 'auto';
+  try { clips[0].load(); } catch (e) {}
+  setTimeout(function () { cargarSiguiente(1); }, 4000);
+
   sec.classList.add('is-ready');
 
-  /* iOS sólo permite hacer seek después de un play(); lo cebamos al primer
-     gesto o scroll y lo pausamos de inmediato. */
+  /* ---- Priming para iOS -------------------------------------------------
+     Safari en iOS no permite hacer seek en un video que nunca se reprodujo.
+     Al primer gesto lanzamos play() y pausamos de inmediato. */
   var cebado = false;
   function cebar() {
     if (cebado) return; cebado = true;
-    var pr = video.play();
-    if (pr && pr.then) pr.then(function () { video.pause(); }).catch(function () {});
-    else { try { video.pause(); } catch (e) {} }
+    clips.forEach(function (v) {
+      var pr = v.play();
+      if (pr && pr.then) pr.then(function () { v.pause(); }).catch(function () {});
+      else { try { v.pause(); } catch (e) {} }
+    });
   }
   ['scroll', 'pointerdown', 'touchstart', 'keydown'].forEach(function (ev) {
     window.addEventListener(ev, cebar, { once: true, passive: true });
   });
+
+  /* ---- Utilidades ------------------------------------------------------- */
+  var clamp  = function (v, a, b) { return v < a ? a : (v > b ? b : v); };
+  var suave  = function (t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  var tramo  = function (p, a, b) { return b === a ? (p >= b ? 1 : 0) : clamp((p - a) / (b - a), 0, 1); };
+
+  var p = 0;
+  var enVista = true;
 
   function medir() {
     var r = sec.getBoundingClientRect();
     enVista = r.bottom > 0 && r.top < window.innerHeight;
     var recorrido = sec.offsetHeight - window.innerHeight;
     p = recorrido <= 0 ? 0 : clamp(-r.top / recorrido, 0, 1);
-    objetivo = p * Math.max(dur - 0.05, 0);
 
     if (prog) prog.style.width = (p * 100).toFixed(2) + '%';
+    if (hud)  hud.textContent = String(Math.round(p * 100)).padStart(3, '0') + ' %';
+    if (cue)  cue.style.opacity = (1 - suave(p / 0.05)).toFixed(2);
 
-    if (copy) {                       // el texto se va antes que el video
-      var f = 1 - smooth(p / 0.30);
+    if (copy) {                                   // el texto se va pronto
+      var f = 1 - suave(p / 0.22);
       copy.style.opacity = f.toFixed(3);
-      copy.style.transform = 'translateY(' + ((1 - f) * -34).toFixed(1) + 'px)';
+      copy.style.transform = 'translateY(' + ((1 - f) * -36).toFixed(1) + 'px)';
       copy.style.pointerEvents = f < 0.08 ? 'none' : '';
     }
-    if (hud) hud.textContent = String(Math.round(p * 100)).padStart(3, '0') + ' %';
-    if (cue) cue.style.opacity = smooth((p - 0.90) / 0.06).toFixed(2);
+
+    /* Revelado monótono: el clip de encima aparece sobre el de abajo, que se
+       queda a opacidad 1. Si el segundo aún no está listo, no se revela y se
+       sostiene el primero: la carga nunca se ve. */
+    for (var i = 0; i < clips.length; i++) {
+      var op = i === 0 ? 1 : suave(tramo(p, REVELAR[i][0], REVELAR[i][1]));
+      if (i > 0 && !listo[i]) op = 0;
+      vis[i] = op;
+      clips[i].style.opacity = op;
+      obj[i] = tramo(p, SCRUB[i][0], SCRUB[i][1]) * Math.max(dur[i] - 0.05, 0);
+    }
   }
 
   var pendiente = false;
@@ -94,16 +139,25 @@
   window.addEventListener('scroll', alScroll, { passive: true });
   window.addEventListener('resize', medir);
 
-  /* Bucle de interpolación: acerca `actual` a `objetivo` un 18% por cuadro.
-     Sólo pedimos un seek si el salto vale la pena (~medio cuadro a 24 fps). */
+  /* ---- Bucle de interpolación ------------------------------------------
+     Acerca el tiempo mostrado al objetivo un 20 % por cuadro y sólo pide un
+     seek si el salto lo amerita (~medio cuadro a 24 fps). Sin esto el scrub
+     se siente escalonado con el scroll por rueda. */
   (function bucle() {
     requestAnimationFrame(bucle);
-    if (!listo || !enVista) return;   // fuera de pantalla no gastamos cuadros
-    actual += (objetivo - actual) * 0.18;
-    if (Math.abs(objetivo - actual) < 0.004) actual = objetivo;
-    if (video.seeking) return;
-    if (Math.abs(video.currentTime - actual) > 0.02) {
-      try { video.currentTime = actual; } catch (e) {}
+    if (!enVista) return;
+    for (var i = 0; i < clips.length; i++) {
+      // Ni el que no está listo, ni el que está tapado del todo por el de
+      // encima: seguir moviendo su cabezal sería gastar seeks a ciegas.
+      if (!listo[i] || vis[i] < 0.01) continue;
+      if (i + 1 < clips.length && vis[i + 1] > 0.995) continue;
+      act[i] += (obj[i] - act[i]) * 0.20;
+      if (Math.abs(obj[i] - act[i]) < 0.004) act[i] = obj[i];
+      var v = clips[i];
+      if (v.seeking) continue;
+      if (Math.abs(v.currentTime - act[i]) > 0.02) {
+        try { v.currentTime = act[i]; } catch (e) {}
+      }
     }
   })();
 
