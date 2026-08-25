@@ -26,12 +26,16 @@
 
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
 
-  /* ---- Fuente según ancho y ahorro de datos ----------------------------- */
-  var conn = navigator.connection || {};
-  var ligero = window.innerWidth < 768 || conn.saveData === true ||
-               /(^|\D)2g/.test(conn.effectiveType || '');
+  /* ---- Fuente según la forma de la pantalla ----------------------------
+     En vertical el `object-fit:cover` de un video 16:9 recorta casi dos
+     tercios del ancho, así que lo que se ve queda con muy pocos píxeles
+     reales. Para eso existe la variante vertical: ya viene recortada al
+     centro y codificada a 720×1280, de modo que todos sus píxeles son
+     píxeles visibles. La elección se hace una sola vez al cargar; cambiarla
+     al rotar obligaría a recargar el video a media animación. */
+  var vertical = window.innerHeight > window.innerWidth && window.innerWidth <= 820;
   clips.forEach(function (v) {
-    v.src = ligero ? v.dataset.srcSm : v.dataset.srcLg;
+    v.src = vertical ? v.dataset.srcV : v.dataset.srcH;
   });
 
   /* ---- Ventanas de cada clip sobre el progreso de la sección ------------

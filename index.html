@@ -41,13 +41,13 @@
 
       <video class="cine-media cine-clip" muted playsinline preload="auto" aria-hidden="true"
              poster="assets/img/poster-1.jpg"
-             data-src-lg="assets/media/hero-1.mp4"
-             data-src-sm="assets/media/hero-1-540.mp4"></video>
+             data-src-h="assets/media/hero-1.mp4"
+             data-src-v="assets/media/hero-1-v.mp4"></video>
 
       <video class="cine-media cine-clip" muted playsinline preload="none" aria-hidden="true"
              poster="assets/img/poster-2.jpg"
-             data-src-lg="assets/media/hero-2.mp4"
-             data-src-sm="assets/media/hero-2-540.mp4"></video>
+             data-src-h="assets/media/hero-2.mp4"
+             data-src-v="assets/media/hero-2-v.mp4"></video>
 
       <div class="cine-grain"></div>
       <div class="cine-scrim"></div>
@@ -67,9 +67,17 @@
     </div>
     <div class="cine-prog"></div>
     <div class="cine-cue" aria-hidden="true">↓</div>
+
+    <button class="son" id="btp-son" type="button" aria-pressed="false" aria-label="Poner la música">
+      <span class="son-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="son-txt">Música</span>
+    </button>
   </div>
 </section>
 
+<audio id="btp-audio" src="assets/audio/btp-tema.m4a" loop preload="none"></audio>
+
 <script src="assets/js/hero.js"></script>
+<script src="assets/js/audio.js"></script>
 </body>
 </html>
