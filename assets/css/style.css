@@ -152,6 +152,7 @@ img,video{ display:block; max-width:100%; }
 }
 @media (prefers-reduced-motion:reduce){
   .son.is-on .son-eq i{ animation:none; height:8px; }
+  .card::before{ animation:none; opacity:.4; }
   .cine.is-ready{ height:auto; }
   .cine-pin{ position:relative; height:100svh; }
   .cine-clip{ display:none; }
@@ -189,12 +190,40 @@ img,video{ display:block; max-width:100%; }
 .grid-prod{ display:grid; gap:clamp(14px,2vw,22px);
   grid-template-columns:repeat(auto-fill,minmax(272px,1fr)); }
 
+/* Borde vivo: una barra de degradado gira detrás de la tarjeta y un panel
+   interior la tapa, dejando ver sólo el filo. El contenido va por encima
+   de los dos, si no el panel se lo come. */
 .card{
-  background:var(--humo); border:1px solid var(--linea); border-radius:18px;
+  position:relative; isolation:isolate;
+  background:var(--humo); border-radius:18px;
   overflow:hidden; display:flex; flex-direction:column;
-  transition:transform .3s var(--ease,cubic-bezier(.23,1,.32,1)), border-color .3s ease;
+  transition:transform .3s var(--ease,cubic-bezier(.23,1,.32,1));
 }
-.card:hover{ transform:translateY(-5px); border-color:rgba(166,206,34,.5); }
+.card::before{
+  content:''; position:absolute; z-index:0;
+  top:50%; left:50%; translate:-50% -50%;
+  width:78%; height:210%;                    /* largo de sobra para cubrir la diagonal */
+  background:linear-gradient(180deg, var(--lima), var(--mx-verde));
+  animation:giroBorde 6s linear infinite;
+  transition:background .3s ease, opacity .3s ease;
+  opacity:.75;
+}
+/* El panel interior deja 1.5px de filo: suficiente para que se lea el
+   barrido sin que la tarjeta parezca un letrero de neón. */
+.card::after{
+  content:''; position:absolute; z-index:1; inset:2px;
+  background:var(--humo); border-radius:16px;
+}
+.card > *{ position:relative; z-index:2; }
+
+@keyframes giroBorde{ to{ rotate:360deg; } }
+
+.card:hover{ transform:translateY(-5px); }
+.card:hover::before{
+  background:linear-gradient(180deg, var(--lima-hi), var(--mx-rojo));
+  animation-duration:3.5s;
+  opacity:1;
+}
 .card-img{
   position:relative; aspect-ratio:1/1; display:grid; place-items:center;
   padding:14px; background:radial-gradient(120% 120% at 50% 30%,
