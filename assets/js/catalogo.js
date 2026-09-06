@@ -21,6 +21,10 @@
            '?text=' + encodeURIComponent(txt);
   }
 
+  var MXN = new Intl.NumberFormat('es-MX', {
+    style: 'currency', currency: 'MXN', maximumFractionDigits: 0
+  });
+
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -31,8 +35,13 @@
     var enlace = waPara(p);
     var meta = [];
     if (p.corte && CORTES[p.corte]) meta.push(CORTES[p.corte]);
-    meta.push('Tallas ' + p.tallas.join(' · '));
-    meta = meta.concat((p.specs || []).slice(0, 2));
+    // sin tallas en la fuente no se inventa el chip: se omite
+    if (p.tallas && p.tallas.length) meta.push('Tallas ' + p.tallas.join(' · '));
+    // el corte ya sale de su propio campo: si además viene en specs, se
+    // repetiría el mismo chip dos veces
+    (p.specs || []).forEach(function (sp) {
+      if (meta.length < 4 && meta.indexOf(sp) < 0) meta.push(sp);
+    });
 
     return '' +
       '<article class="card" data-corte="' + esc(p.corte || '') + '" data-gama="' + esc(p.gama) + '">' +
@@ -50,7 +59,9 @@
             meta.map(function (m) { return '<span>' + esc(m) + '</span>'; }).join('') +
           '</div>' +
           '<div class="card-foot">' +
-            '<span class="card-precio">Consultar precio</span>' +
+            (p.precio
+              ? '<span class="card-precio card-precio-fijo">' + MXN.format(p.precio) + '</span>'
+              : '<span class="card-precio">Consultar precio</span>') +
             (enlace
               ? '<a class="card-link" href="' + enlace + '" target="_blank" rel="noopener">Preguntar ↗</a>'
               : '<a class="card-link" href="#contacto">Preguntar ↗</a>') +
@@ -66,6 +77,14 @@
     grid.innerHTML = vis.length
       ? vis.map(tarjeta).join('')
       : '<p class="vacio">No hay modelos con ese corte por ahora.</p>';
+
+    // Si a un modelo todavía no le llega la foto, la tarjeta lo dice en vez
+    // de mostrar el icono de imagen rota.
+    [].forEach.call(grid.querySelectorAll('.card-img img'), function (img) {
+      img.addEventListener('error', function () {
+        img.remove();
+      }, { once: true });
+    });
   }
 
   // Sólo se ofrecen los cortes que existen en el catálogo: un filtro que

@@ -243,3 +243,17 @@ img,video{ display:block; max-width:100%; }
 @media(max-width:560px){
   .grid-prod{ grid-template-columns:1fr; }
 }
+
+/* Precio en firme, para distinguirlo del "consultar" */
+.card-precio-fijo{
+  font-family:'Anton',sans-serif; font-size:1.15rem; letter-spacing:.01em;
+  color:var(--lima); text-transform:none;
+}
+/* Modelo sin foto todavía: la tarjeta lo dice en vez de romperse */
+.card-img::after{
+  content:'Foto en camino'; position:absolute; inset:0; z-index:0;
+  display:grid; place-items:center;
+  font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--gris-2);
+}
+.card-img img{ position:relative; z-index:1; }

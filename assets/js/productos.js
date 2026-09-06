@@ -109,6 +109,24 @@ window.BTP_PRODUCTOS = [
           "hechos para porteros exigentes. Esta versión semi profesional " +
           "ofrece un corte de última generación que se adapta anatómicamente " +
           "a la mano, con ajuste preciso y libertad de movimiento superior."
+  },
+  {
+    slug: "kaizen-training-negro-verde",
+    nombre: "Kaizen Training",
+    color: "Negro / Verde",
+    gama: "training",
+    corte: "hibrido",
+    tallas: [],                  // Jose no pasó tallas de este modelo
+    precio: 500,
+    fotos: 1,
+    specs: ["Látex de alta durabilidad", "Negativo + plano", "Punch reforzado",
+            "Fuelles laterales elásticos", "Pulgar reforzado",
+            "Velcro ancho con puño elástico", "Pasto natural y sintético"],
+    desc: "El Kaizen Training nace de una idea simple: el portero no se hace " +
+          "en el partido, se hace en el entrenamiento. Por eso prioriza lo que " +
+          "de verdad importa entre semana — durabilidad, comodidad y un agarre " +
+          "que responde repetición tras repetición — sin el precio de un guante " +
+          "de competencia."
   }
 ];
 
@@ -116,11 +134,13 @@ window.BTP_PRODUCTOS = [
 window.BTP_CORTES = {
   hyper:    "Hyper Cut",
   evo:      "Evo Cut",
-  negativo: "Negative Cut"
+  negativo: "Negative Cut",
+  hibrido:  "Híbrido"
 };
 
 window.BTP_GAMAS = {
-  pro:   "PRO",
-  prime: "Prime",
-  alpha: "Alpha"
+  pro:      "PRO",
+  prime:    "Prime",
+  alpha:    "Alpha",
+  training: "Training"
 };
