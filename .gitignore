@@ -1,3 +1,6 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# imágenes sueltas que caen en la carpeta y no son del sitio
+grok-*.jpg
