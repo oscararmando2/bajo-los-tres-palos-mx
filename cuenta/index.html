@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pagos · Bajo Los Tres Palos MX</title>
+<meta name="description" content="Datos para transferencia: Santander y Mercado Pago. Copia, paga y manda tu comprobante por WhatsApp.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#08090A">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bajo Los Tres Palos MX">
+<meta property="og:title" content="Pagos · Bajo Los Tres Palos MX">
+<meta property="og:description" content="Santander y Mercado Pago. Copia los datos y manda tu comprobante.">
+<meta property="og:locale" content="es_MX">
+
+<link rel="icon" href="../assets/img/favicon-32.png" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --negro:#08090A; --carbon:#101214; --humo:#16191C;
+  --linea:rgba(242,245,238,.10);
+  --lima:#A6CE22; --lima-hi:#C7EE3B;
+  --hueso:#F2F5EE; --gris:#96A093; --gris-2:#6B736A;
+  --mx-verde:#0E9B2C; --mx-rojo:#D42A1E;
+  --santander:#EC0000; --mp:#009EE3; --wa:#25D366;
+  --ease:cubic-bezier(.23,1,.32,1);
+  --pad:clamp(20px,5vw,64px);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--negro); color:var(--hueso);
+  font-family:'Barlow',system-ui,sans-serif; font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img{ display:block; max-width:100%; height:auto; }
+::selection{ background:var(--lima); color:var(--negro); }
+.wrap{ width:min(1060px,100%); margin-inline:auto; padding-inline:var(--pad); }
+.display{ font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase; line-height:.95; }
+.mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:.68rem; letter-spacing:.26em; text-transform:uppercase; }
+.tricolor{ height:3px; background:linear-gradient(90deg,var(--mx-verde) 0 33.33%,var(--hueso) 33.33% 66.66%,var(--mx-rojo) 66.66%); }
+
+/* ───────────── portada ───────────── */
+.portada{
+  position:relative; overflow:hidden;
+  padding:clamp(44px,8vh,86px) 0 clamp(36px,6vh,60px);
+  background:
+    radial-gradient(90% 120% at 82% 10%, rgba(166,206,34,.16), transparent 58%),
+    radial-gradient(70% 90% at 10% 100%, rgba(212,42,30,.10), transparent 60%),
+    var(--negro);
+}
+.portada::after{
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background:repeating-linear-gradient(135deg, rgba(242,245,238,.02) 0 2px, transparent 2px 9px);
+}
+.portada .wrap{ position:relative; z-index:1; }
+.escudo{ width:clamp(96px,14vw,132px); margin-bottom:22px;
+  filter:drop-shadow(0 14px 38px rgba(0,0,0,.8)); }
+.portada h1{ margin:0; font-size:clamp(2.5rem,8vw,5rem); }
+.portada h1 em{ font-style:normal; color:var(--lima); }
+.portada p{ margin:18px 0 0; max-width:46ch; color:var(--gris); font-size:1.06rem; }
+.sello{
+  display:inline-flex; align-items:center; gap:9px; margin-bottom:18px;
+  border:1px solid rgba(166,206,34,.4); background:rgba(166,206,34,.08);
+  color:var(--lima); border-radius:999px; padding:7px 15px;
+}
+.sello i{ width:7px; height:7px; border-radius:50%; background:var(--lima);
+  box-shadow:0 0 0 0 rgba(166,206,34,.6); animation:latir 2.4s ease-out infinite; }
+@keyframes latir{ 70%{ box-shadow:0 0 0 9px rgba(166,206,34,0); } 100%{ box-shadow:0 0 0 0 rgba(166,206,34,0); } }
+
+/* ───────────── pasos ───────────── */
+.pasos{ background:var(--carbon); border-block:1px solid var(--linea); padding:26px 0; }
+.pasos-in{ display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); }
+.paso{ display:flex; gap:14px; align-items:flex-start; }
+.paso b{
+  flex:none; width:30px; height:30px; border-radius:50%; display:grid; place-items:center;
+  background:var(--lima); color:var(--negro); font-family:'Anton',sans-serif; font-size:.9rem;
+}
+.paso p{ margin:0; font-size:.94rem; color:var(--gris); }
+.paso strong{ display:block; color:var(--hueso); font-weight:700; margin-bottom:2px; }
+
+/* ───────────── sección ───────────── */
+.sec{ padding:clamp(48px,8vh,84px) 0; }
+.sec-tit{ margin:0 0 6px; font-size:clamp(1.6rem,4.4vw,2.6rem); }
+.sec-tit em{ font-style:normal; color:var(--lima); }
+.sec-sub{ margin:0 0 34px; color:var(--gris); }
+
+.metodos{ display:grid; gap:clamp(20px,3vw,30px); grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+
+/* ───────────── tarjeta bancaria ───────────── */
+.metodo{ display:flex; flex-direction:column; gap:12px; }
+.plastico{
+  position:relative; aspect-ratio:1.586/1; border-radius:18px; overflow:hidden;
+  padding:clamp(18px,3.4vw,24px); display:flex; flex-direction:column;
+  color:#fff; cursor:pointer; border:0; text-align:left; width:100%;
+  font-family:inherit; font-size:inherit;
+  box-shadow:0 20px 44px rgba(0,0,0,.55);
+  transition:transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.plastico:hover{ transform:translateY(-5px) rotate(-.4deg); box-shadow:0 26px 58px rgba(0,0,0,.65); }
+.plastico:focus-visible{ outline:3px solid var(--lima); outline-offset:4px; }
+.plastico::after{            /* brillo diagonal */
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(118deg, rgba(255,255,255,.18) 0 24%, transparent 46%);
+}
+.plastico.santander{ background:linear-gradient(142deg,#ff2b2b 0%,#EC0000 42%,#8d0000 100%); }
+.plastico.mp{ background:linear-gradient(142deg,#45c9ff 0%,#009EE3 44%,#005f8d 100%); }
+
+.p-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+.p-marca{ font-family:'Anton',sans-serif; font-size:1.18rem; letter-spacing:.02em; text-transform:uppercase; }
+.p-marca small{ display:block; font-family:'IBM Plex Mono',monospace; font-size:.56rem;
+  letter-spacing:.24em; opacity:.8; margin-top:3px; }
+.p-nfc{ width:22px; height:22px; opacity:.85; }
+.p-chip{
+  width:44px; height:33px; border-radius:6px; margin:auto 0 0;
+  background:linear-gradient(145deg,#f6d98a,#c9a227 55%,#8c6d12);
+  position:relative; box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);
+}
+.p-chip::before,.p-chip::after{
+  content:''; position:absolute; left:16%; right:16%; height:1px; background:rgba(0,0,0,.28);
+}
+.p-chip::before{ top:36%; } .p-chip::after{ top:64%; }
+.p-num{
+  font-family:'IBM Plex Mono',monospace; font-weight:500;
+  font-size:clamp(1.05rem,3.6vw,1.38rem); letter-spacing:.1em; margin-top:14px;
+  text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+.p-bot{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:12px; }
+.p-lab{ font-family:'IBM Plex Mono',monospace; font-size:.54rem; letter-spacing:.2em;
+  text-transform:uppercase; opacity:.72; margin-bottom:2px; }
+.p-val{ font-size:.88rem; font-weight:600; letter-spacing:.02em; }
+.p-red{ font-family:'Anton',sans-serif; font-size:1rem; letter-spacing:.06em; opacity:.95; }
+
+/* ───────────── filas de copiar ───────────── */
+.copiar{
+  display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+  background:var(--humo); border:1px solid var(--linea); border-radius:13px;
+  padding:13px 14px; cursor:pointer; color:inherit; font-family:inherit;
+  transition:border-color .2s ease, background .2s ease;
+}
+.copiar:hover{ border-color:rgba(166,206,34,.5); background:#1a1e21; }
+.copiar:focus-visible{ outline:3px solid var(--lima); outline-offset:3px; }
+.copiar.ok{ border-color:var(--lima); background:rgba(166,206,34,.1); }
+.c-txt{ flex:1; min-width:0; }
+.c-lab{ display:block; font-family:'IBM Plex Mono',monospace; font-size:.57rem;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--gris-2); margin-bottom:3px; }
+.c-val{ display:block; font-family:'IBM Plex Mono',monospace; font-size:.95rem;
+  color:var(--hueso); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.c-btn{
+  flex:none; display:inline-flex; align-items:center; gap:6px;
+  font-size:.74rem; font-weight:800; color:var(--negro); background:var(--lima);
+  border-radius:999px; padding:8px 13px; white-space:nowrap;
+}
+.copiar.ok .c-btn{ background:var(--lima-hi); }
+.c-btn svg{ width:13px; height:13px; }
+
+/* ───────────── comprobante ───────────── */
+.comprobante{ background:var(--carbon); border-top:1px solid var(--linea); }
+.caja{
+  border:1px solid rgba(166,206,34,.3); border-radius:20px;
+  background:linear-gradient(160deg, rgba(166,206,34,.1), transparent 60%), var(--humo);
+  padding:clamp(24px,4vw,40px);
+}
+.caja h2{ margin:0 0 10px; font-size:clamp(1.5rem,3.6vw,2.2rem); }
+.caja > p{ margin:0 0 22px; color:var(--gris); max-width:52ch; }
+.campo{ display:block; margin-bottom:16px; max-width:280px; }
+.campo span{ display:block; margin-bottom:7px; color:var(--gris); font-size:.86rem; }
+.campo input{
+  width:100%; background:var(--negro); color:var(--hueso);
+  border:1px solid var(--linea); border-radius:11px; padding:12px 14px;
+  font-family:'IBM Plex Mono',monospace; font-size:1rem;
+}
+.campo input:focus{ outline:none; border-color:var(--lima); }
+.wa{
+  display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+  background:var(--wa); color:#052B12; font-weight:800; font-size:1rem;
+  border:0; cursor:pointer; font-family:inherit;
+  padding:15px 26px; border-radius:999px;
+  transition:transform .2s var(--ease), background .2s ease;
+}
+.wa:hover{ transform:translateY(-2px); background:#34e67c; }
+.wa:focus-visible{ outline:3px solid var(--lima); outline-offset:3px; }
+.nota{ margin:20px 0 0; font-size:.86rem; color:var(--gris-2); max-width:52ch; }
+
+.pie{ padding:34px 0; border-top:1px solid var(--linea); }
+.pie-in{ display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center; }
+.pie img{ height:50px; }
+.pie small{ color:var(--gris-2); font-size:.8rem; }
+
+/* ───────────── aviso ───────────── */
+#aviso{
+  position:fixed; left:50%; bottom:26px; translate:-50% 0; z-index:60;
+  background:var(--lima); color:var(--negro); font-weight:800; font-size:.9rem;
+  padding:12px 22px; border-radius:999px; box-shadow:0 14px 34px rgba(0,0,0,.5);
+  opacity:0; pointer-events:none; transition:opacity .25s ease, translate .25s ease;
+}
+#aviso.ver{ opacity:1; translate:-50% -6px; }
+
+@media(max-width:430px){
+  /* el tracking de .mono parte el sello en dos renglones en pantallas chicas */
+  .sello{ letter-spacing:.13em; font-size:.62rem; padding:6px 13px; }
+  .p-num{ letter-spacing:.06em; }
+}
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="tricolor"></div>
+
+<!-- ═════════ PORTADA ═════════ -->
+<header class="portada">
+  <div class="wrap">
+    <img class="escudo" src="../assets/img/logo-btp.png" alt="Bajo Los Tres Palos MX" width="640" height="611">
+    <div class="sello mono"><i></i> Pago seguro · transferencia directa</div>
+    <h1 class="display">Aparta tus<br>guantes <em>hoy</em></h1>
+    <p>Transfiere a cualquiera de las dos cuentas, mándanos el comprobante por WhatsApp y apartamos tu par el mismo día. Nada de formularios ni de dar tu tarjeta en línea.</p>
+  </div>
+</header>
+
+<!-- ═════════ PASOS ═════════ -->
+<section class="pasos">
+  <div class="wrap pasos-in">
+    <div class="paso"><b>1</b><p><strong>Copia los datos</strong>Toca cualquier dato y se copia solo.</p></div>
+    <div class="paso"><b>2</b><p><strong>Haz la transferencia</strong>Desde tu app del banco, por el monto acordado.</p></div>
+    <div class="paso"><b>3</b><p><strong>Manda el comprobante</strong>Por WhatsApp, y te confirmamos al momento.</p></div>
+  </div>
+</section>
+
+<!-- ═════════ MÉTODOS ═════════ -->
+<section class="sec">
+  <div class="wrap">
+    <h2 class="display sec-tit">Dónde <em>depositar</em></h2>
+    <p class="sec-sub">Las dos cuentas están a nombre del mismo titular. Usa la que te quede más cómoda.</p>
+    <div class="metodos" id="metodos"></div>
+  </div>
+</section>
+
+<!-- ═════════ COMPROBANTE ═════════ -->
+<section class="sec comprobante">
+  <div class="wrap">
+    <div class="caja">
+      <h2 class="display">¿Ya pagaste? <span style="color:var(--lima)">Mándalo</span></h2>
+      <p>Pon el monto y dale al botón. Se abre WhatsApp con el mensaje listo — nada más adjunta la captura de tu transferencia.</p>
+      <label class="campo">
+        <span>Monto transferido (opcional)</span>
+        <input id="monto" type="text" inputmode="decimal" placeholder="$ 0.00" autocomplete="off">
+      </label>
+      <button class="wa" id="btn-wa" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.7 15l-1.2 4.4 4.5-1.2A10 10 0 1 0 12 2zm5.6 14.2c-.2.7-1.3 1.3-1.9 1.3-.5 0-1.1.2-3.6-.8-3-1.3-5-4.4-5.1-4.6-.2-.2-1.2-1.6-1.2-3.1s.8-2.2 1.1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.5l1 2.3c.1.2.1.4 0 .6l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.7-.1l1-1.2c.2-.2.4-.2.7-.1l2.2 1.1c.3.2.5.2.6.4.1.1.1.7-.1 1.4z"/></svg>
+        Enviar comprobante
+      </button>
+      <p class="nota">Tu pago queda apartado en cuanto recibimos la captura. Si transferiste por error o algo no cuadra, escríbenos por el mismo WhatsApp y lo resolvemos.</p>
+    </div>
+  </div>
+</section>
+
+<div class="tricolor"></div>
+<footer class="pie">
+  <div class="wrap pie-in">
+    <img src="../assets/img/logo-btp.png" alt="Bajo Los Tres Palos MX" width="640" height="611">
+    <small>© <span id="anio">2026</span> Bajo Los Tres Palos MX · Guantes de portero</small>
+  </div>
+</footer>
+
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   ÚNICO LUGAR QUE HAY QUE EDITAR
+   Cambia las X por tus datos reales y la página se arma sola.
+   El número de WhatsApp va en formato internacional sin signos:
+   52 + los 10 dígitos.  Ejemplo: "5215512345678"
+   ══════════════════════════════════════════════════════════════ */
+var DATOS = {
+  whatsapp: "52XXXXXXXXXX",
+  titular:  "XXXXXXXXXXXXXXXXXXXX",
+
+  cuentas: [
+    {
+      banco:   "Santander",
+      tipo:    "Débito",
+      clase:   "santander",
+      red:     "VISA",
+      tarjeta: "XXXX XXXX XXXX XXXX",
+      clabe:   "XXXXXXXXXXXXXXXXXX"
+    },
+    {
+      banco:   "Mercado Pago",
+      tipo:    "Cuenta digital",
+      clase:   "mp",
+      red:     "MASTERCARD",
+      tarjeta: "XXXX XXXX XXXX XXXX",
+      clabe:   "XXXXXXXXXXXXXXXXXX"
+    }
+  ]
+};
+/* ════════════════ de aquí para abajo no hace falta tocar ════════════════ */
+
+(function () {
+  var aviso = document.getElementById('aviso'), temporizador = null;
+  function avisar(txt) {
+    aviso.textContent = txt;
+    aviso.classList.add('ver');
+    clearTimeout(temporizador);
+    temporizador = setTimeout(function () { aviso.classList.remove('ver'); }, 1800);
+  }
+
+  /* Clipboard falla en http:// y en algunos navegadores embebidos (el de
+     Instagram, por ejemplo), así que queda el textarea de respaldo. */
+  function respaldo(txt) {
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-1000px';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function copiar(txt) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(txt).then(function () { return true; })
+             .catch(function () { return respaldo(txt); });
+    }
+    return Promise.resolve(respaldo(txt));
+  }
+
+  var sinLlenar = function (v) { return /^[X\s]+$/i.test(v); };
+  var esc = function (s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  };
+
+  var NFC = '<svg class="p-nfc" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+            'stroke-width="2" stroke-linecap="round" aria-hidden="true">' +
+            '<path d="M6 8a8 8 0 0 1 0 8M10 5a13 13 0 0 1 0 14M14 3.5a17 17 0 0 1 0 17"/></svg>';
+  var ICONO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+              'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<rect x="9" y="9" width="13" height="13" rx="2"/>' +
+              '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+  function fila(etiqueta, valor) {
+    return '<button type="button" class="copiar" data-copiar="' + esc(valor.replace(/\s/g, '')) + '">' +
+             '<span class="c-txt"><span class="c-lab">' + esc(etiqueta) + '</span>' +
+             '<span class="c-val">' + esc(valor) + '</span></span>' +
+             '<span class="c-btn">' + ICONO + 'Copiar</span></button>';
+  }
+
+  document.getElementById('metodos').innerHTML = DATOS.cuentas.map(function (c) {
+    return '<div class="metodo">' +
+      '<button type="button" class="plastico ' + esc(c.clase) + '" data-copiar="' +
+              esc(c.tarjeta.replace(/\s/g, '')) + '" aria-label="Copiar tarjeta ' + esc(c.banco) + '">' +
+        '<div class="p-top"><span class="p-marca">' + esc(c.banco) +
+          '<small>' + esc(c.tipo) + '</small></span>' + NFC + '</div>' +
+        '<div class="p-chip"></div>' +
+        '<div class="p-num">' + esc(c.tarjeta) + '</div>' +
+        '<div class="p-bot"><div><div class="p-lab">Titular</div>' +
+          '<div class="p-val">' + esc(DATOS.titular) + '</div></div>' +
+          '<span class="p-red">' + esc(c.red) + '</span></div>' +
+      '</button>' +
+      fila(c.banco + ' · Tarjeta', c.tarjeta) +
+      fila(c.banco + ' · CLABE', c.clabe) +
+    '</div>';
+  }).join('');
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-copiar]');
+    if (!el) return;
+    var valor = el.getAttribute('data-copiar');
+    if (sinLlenar(valor)) {
+      avisar('Ese dato todavía trae las X');
+      return;
+    }
+    copiar(valor).then(function (ok) {
+      avisar(ok ? 'Copiado ✓' : 'No se pudo copiar');
+      if (!ok) return;
+      var f = el.closest('.copiar');
+      if (!f) return;
+      f.classList.add('ok');
+      var b = f.querySelector('.c-btn'), antes = b.innerHTML;
+      b.textContent = 'Copiado ✓';
+      setTimeout(function () { f.classList.remove('ok'); b.innerHTML = antes; }, 1700);
+    });
+  });
+
+  document.getElementById('btn-wa').addEventListener('click', function () {
+    var tel = String(DATOS.whatsapp).replace(/\D/g, '');
+    if (sinLlenar(DATOS.whatsapp) || tel.length < 10) {
+      avisar('Falta poner el WhatsApp en el archivo');
+      return;
+    }
+    var monto = document.getElementById('monto').value.trim();
+    var txt = 'Hola, acabo de hacer una transferencia a Bajo Los Tres Palos MX' +
+              (monto ? ' por ' + monto : '') + '. Aquí va mi comprobante.';
+    window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+  });
+
+  document.getElementById('anio').textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
