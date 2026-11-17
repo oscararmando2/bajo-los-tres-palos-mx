@@ -150,7 +150,7 @@ img{ display:block; max-width:100%; height:auto; }
 .p-bot{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:12px; }
 .p-lab{ font-family:'IBM Plex Mono',monospace; font-size:.54rem; letter-spacing:.2em;
   text-transform:uppercase; opacity:.72; margin-bottom:2px; }
-.p-val{ font-size:.88rem; font-weight:600; letter-spacing:.02em; }
+.p-val{ font-size:.88rem; font-weight:600; letter-spacing:.02em; white-space:nowrap; }
 .p-red{ font-family:'Anton',sans-serif; font-size:1rem; letter-spacing:.06em; opacity:.95; }
 
 /* ───────────── filas de copiar ───────────── */
@@ -214,6 +214,10 @@ img{ display:block; max-width:100%; height:auto; }
   /* el tracking de .mono parte el sello en dos renglones en pantallas chicas */
   .sello{ letter-spacing:.13em; font-size:.62rem; padding:6px 13px; }
   .p-num{ letter-spacing:.06em; }
+  /* un nombre completo parte en dos renglones y queda feo junto a la marca;
+     cabe de un tirón bajándole un punto */
+  .p-val{ font-size:.70rem; letter-spacing:0; }
+  .p-red{ font-size:.86rem; }
 }
 @media (prefers-reduced-motion:reduce){
   *{ animation:none !important; transition:none !important; }
@@ -286,9 +290,9 @@ img{ display:block; max-width:100%; height:auto; }
    ══════════════════════════════════════════════════════════════ */
 var DATOS = {
   // 52 + los 10 dígitos, sin espacios ni signos. Ej: "5215512345678"
-  whatsapp: "52XXXXXXXXXX",
+  whatsapp: "527151315630",
   // Como aparece en la cuenta
-  titular:  "XXXXXXXXXXXXXXXXXXXX",
+  titular:  "JOSE RAMON ALVAREZ TARULA",
 
   cuentas: [
     {
