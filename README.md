@@ -2,7 +2,7 @@
 
 Hero de una pantalla para **BAJO LOS TRES PALOS MX (BTP)** — guantes de portero.
 
-**En vivo:** https://oscararmando2.github.io/bajo-los-tres-palos-mx/
+**En vivo:** https://bajo-los-tres-palos-mx.vercel.app/
 
 ## El efecto
 
