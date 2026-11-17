@@ -185,14 +185,6 @@ img{ display:block; max-width:100%; height:auto; }
 }
 .caja h2{ margin:0 0 10px; font-size:clamp(1.5rem,3.6vw,2.2rem); }
 .caja > p{ margin:0 0 22px; color:var(--gris); max-width:52ch; }
-.campo{ display:block; margin-bottom:16px; max-width:280px; }
-.campo span{ display:block; margin-bottom:7px; color:var(--gris); font-size:.86rem; }
-.campo input{
-  width:100%; background:var(--negro); color:var(--hueso);
-  border:1px solid var(--linea); border-radius:11px; padding:12px 14px;
-  font-family:'IBM Plex Mono',monospace; font-size:1rem;
-}
-.campo input:focus{ outline:none; border-color:var(--lima); }
 .wa{
   display:inline-flex; align-items:center; gap:10px; text-decoration:none;
   background:var(--wa); color:#052B12; font-weight:800; font-size:1rem;
@@ -265,11 +257,7 @@ img{ display:block; max-width:100%; height:auto; }
   <div class="wrap">
     <div class="caja">
       <h2 class="display">¿Ya pagaste? <span style="color:var(--lima)">Mándalo</span></h2>
-      <p>Pon el monto y dale al botón. Se abre WhatsApp con el mensaje listo — nada más adjunta la captura de tu transferencia.</p>
-      <label class="campo">
-        <span>Monto transferido (opcional)</span>
-        <input id="monto" type="text" inputmode="decimal" placeholder="$ 0.00" autocomplete="off">
-      </label>
+      <p>Dale al botón y se abre WhatsApp con el mensaje listo. Nada más adjunta la captura de tu transferencia.</p>
       <button class="wa" id="btn-wa" type="button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.7 15l-1.2 4.4 4.5-1.2A10 10 0 1 0 12 2zm5.6 14.2c-.2.7-1.3 1.3-1.9 1.3-.5 0-1.1.2-3.6-.8-3-1.3-5-4.4-5.1-4.6-.2-.2-1.2-1.6-1.2-3.1s.8-2.2 1.1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.5l1 2.3c.1.2.1.4 0 .6l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.7-.1l1-1.2c.2-.2.4-.2.7-.1l2.2 1.1c.3.2.5.2.6.4.1.1.1.7-.1 1.4z"/></svg>
         Enviar comprobante
@@ -297,7 +285,9 @@ img{ display:block; max-width:100%; height:auto; }
    52 + los 10 dígitos.  Ejemplo: "5215512345678"
    ══════════════════════════════════════════════════════════════ */
 var DATOS = {
+  // 52 + los 10 dígitos, sin espacios ni signos. Ej: "5215512345678"
   whatsapp: "52XXXXXXXXXX",
+  // Como aparece en la cuenta
   titular:  "XXXXXXXXXXXXXXXXXXXX",
 
   cuentas: [
@@ -305,17 +295,17 @@ var DATOS = {
       banco:   "Santander",
       tipo:    "Débito",
       clase:   "santander",
-      red:     "VISA",
-      tarjeta: "XXXX XXXX XXXX XXXX",
-      clabe:   "XXXXXXXXXXXXXXXXXX"
+      red:     "MASTERCARD",
+      tarjeta: "5579 1005 0327 1676",
+      clabe:   ""                      // vacío = no se muestra la fila
     },
     {
       banco:   "Mercado Pago",
       tipo:    "Cuenta digital",
       clase:   "mp",
       red:     "MASTERCARD",
-      tarjeta: "XXXX XXXX XXXX XXXX",
-      clabe:   "XXXXXXXXXXXXXXXXXX"
+      tarjeta: "5428 7807 5526 9792",
+      clabe:   ""
     }
   ]
 };
@@ -350,7 +340,7 @@ var DATOS = {
     return Promise.resolve(respaldo(txt));
   }
 
-  var sinLlenar = function (v) { return /^[X\s]+$/i.test(v); };
+  var sinLlenar = function (v) { return !v || /^[X\s]+$/i.test(v); };
   var esc = function (s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -380,12 +370,14 @@ var DATOS = {
           '<small>' + esc(c.tipo) + '</small></span>' + NFC + '</div>' +
         '<div class="p-chip"></div>' +
         '<div class="p-num">' + esc(c.tarjeta) + '</div>' +
-        '<div class="p-bot"><div><div class="p-lab">Titular</div>' +
-          '<div class="p-val">' + esc(DATOS.titular) + '</div></div>' +
+        '<div class="p-bot">' +
+          (sinLlenar(DATOS.titular) ? '<div></div>' :
+            '<div><div class="p-lab">Titular</div>' +
+            '<div class="p-val">' + esc(DATOS.titular) + '</div></div>') +
           '<span class="p-red">' + esc(c.red) + '</span></div>' +
       '</button>' +
-      fila(c.banco + ' · Tarjeta', c.tarjeta) +
-      fila(c.banco + ' · CLABE', c.clabe) +
+      (sinLlenar(c.tarjeta) ? '' : fila(c.banco + ' · Tarjeta', c.tarjeta)) +
+      (sinLlenar(c.clabe)   ? '' : fila(c.banco + ' · CLABE', c.clabe)) +
     '</div>';
   }).join('');
 
@@ -415,9 +407,8 @@ var DATOS = {
       avisar('Falta poner el WhatsApp en el archivo');
       return;
     }
-    var monto = document.getElementById('monto').value.trim();
-    var txt = 'Hola, acabo de hacer una transferencia a Bajo Los Tres Palos MX' +
-              (monto ? ' por ' + monto : '') + '. Aquí va mi comprobante.';
+    var txt = 'Hola, acabo de hacer una transferencia a Bajo Los Tres Palos MX. ' +
+              'Aquí va mi comprobante.';
     window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
   });
 
